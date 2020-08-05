@@ -7,7 +7,12 @@
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
+
+    FBullCowCount Count;
+    PrintLine(TEXT("Bulls = %i, Cows = %i"), Count.Bulls, Count.Cows);
+
     Isograms = GetValidWords(Words);
+    
     SetupGame();
     // If using a .txt file
     // const FString WordListPath = FPaths::ProjectContentDir() / TEXT("WordLists/HiddenWordList.txt");
@@ -99,11 +104,9 @@ void UBullCowCartridge::ProcessGuess(const FString& Guess)
     }
     
     // Show the player Bulls and Cows
-    // Deliberatley not initializing bc these are out parameters
-    int32 Bulls, Cows;
-    GetBullCows(Guess, Bulls, Cows);
+    FBullCowCount Score = GetBullCows(Guess);
 
-    PrintLine(TEXT("You have %i Bulls and %i Cows"), Bulls, Cows);
+    PrintLine(TEXT("You have %i Bulls and %i Cows"), Score.Bulls, Score.Cows);
 
     PrintLine(TEXT("You have %i lives remaining."), Lives);
 }
@@ -154,10 +157,9 @@ TArray<FString> UBullCowCartridge::GetValidWords(const TArray<FString>& WordsLis
     return ValidWords;
 }
 
-void UBullCowCartridge::GetBullCows(const FString& Guess, int32& BullCount, int32& CowCount) const
+FBullCowCount UBullCowCartridge::GetBullCows(const FString& Guess) const
 {
-    BullCount = 0;
-    CowCount = 0;
+    FBullCowCount Count;
 
     // For every index Guess is same as index Hidden, BullCount++
     // If not a bull, was it a cow? if yes CowCownt++
@@ -167,20 +169,22 @@ void UBullCowCartridge::GetBullCows(const FString& Guess, int32& BullCount, int3
         //Check for correct letter in correct place
         if (Guess[GuessIndex] == HiddenWord[GuessIndex])
         {
-            BullCount ++;
+            Count.Bulls++;
             continue;
         }
 
         for (int32 HiddenIndex = 0; HiddenIndex < HiddenWord.Len(); HiddenIndex++)
         {
             // Check for correct letter (not necessarily in correct place)
+                
             if (Guess[GuessIndex] == HiddenWord[HiddenIndex])
             {
-                CowCount ++;
+                Count.Cows++;
                 break;
             }
             
         }
     }
+    return Count;
 
 }
