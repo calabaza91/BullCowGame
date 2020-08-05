@@ -11,9 +11,28 @@ void UBullCowCartridge::BeginPlay() // When the game starts
     SetupGame();
     // If using a .txt file
     // const FString WordListPath = FPaths::ProjectContentDir() / TEXT("WordLists/HiddenWordList.txt");
+     //FFileHelper::LoadFileToStringArray(WordList, *WordListPath);
     
-    FFileHelper::LoadFileToStringArray(WordList, *WordListPath);
+    PrintLine(TEXT("The number of possible words is %i"), Words.Num());
     PrintLine(TEXT("The hidden word is: %s\nIt is %i letters long."), *HiddenWord, HiddenWord.Len()); // Debug Line
+
+
+    TArray<FString> ValidWords;
+
+    for (int32 i = 0; i < 10; i++)
+    {
+        if (Words[i].Len() >= 4 && Words[i].Len() <= 8)
+        {
+            ValidWords.Emplace(Words[i]);
+            //PrintLine(TEXT("%s"), *Words[i]);
+        }
+        
+    }
+
+    for (int32 i=0; i < ValidWords.Num(); i++)
+    {
+        PrintLine(TEXT("%s."), *ValidWords[i]);
+    }
     
 }
 
@@ -41,6 +60,7 @@ void UBullCowCartridge::SetupGame()
     PrintLine(TEXT("Guess the %i letter word! You have %i lives."), Lives, Lives);
     PrintLine(TEXT("Type in your guess and\nPress Enter to continue..."));  // Prompt player for guess
 
+    // If using a .txt file
     // const TCHAR HW[] = TEXT("plums");
     // PrintLine(TEXT("The first letter is %c"), HiddenWord[0]);
     // PrintLine(TEXT("The 4th letter in HW is %c"), HW[3]);
